@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # 1. Database Service (PostgreSQL)
   db:
@@ -17,11 +15,12 @@ services:
     networks:
       - ai_network
 
-  # 2. Laravel API Service
-  laravel_api:
+  # 2. Laravel API Service (Your 'backend' folder)
+  backend:
     build: 
-      context: ./laravel_api
+      context: ./backend 
       dockerfile: Dockerfile
+    image: ai_laravel
     container_name: ai_laravel
     restart: always
     depends_on:
@@ -41,15 +40,16 @@ services:
     networks:
       - ai_network
 
-  # 3. Node.js Evolution Service
-  node_backend:
+  # 3. Node.js Evolution Service (Your 'genAiWithNode' folder)
+  genAiWithNode:
     build:
-      context: ./node_backend
+      context: ./genAiWithNode
       dockerfile: Dockerfile
+    image: ai_node
     container_name: ai_node
     restart: always
     depends_on:
-      - laravel_api
+      - backend
     ports:
       - "3000:3000"
     environment:
@@ -57,15 +57,16 @@ services:
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       GOOGLE_CX: ${GOOGLE_CX}
-      LARAVEL_API_URL: http://laravel_api:8000/api
+      LARAVEL_API_URL: http://backend:8000/api
     networks:
       - ai_network
 
-  # 4. React Frontend Service (Vite)
+  # 4. React Frontend Service (Your 'frontend' folder)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: ai_frontend
     container_name: ai_frontend
     restart: always
     ports:
@@ -76,11 +77,9 @@ services:
     networks:
       - ai_network
 
-# Persistent storage for the database so data isn't lost when containers stop
 volumes:
   postgres_data:
 
-# Internal network for container-to-container communication
 networks:
   ai_network:
     driver: bridge

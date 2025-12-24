@@ -1,20 +1,19 @@
-# Use the stable Node.js 18 image
-FROM node:18-alpine
+# Use Node 20 (LTS) to fix ReferenceError: File is not defined
+FROM node:20-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files first to leverage Docker caching
+# Copy package files
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the source code
+# Copy source code
 COPY . .
 
-# Your app listens on port 3000
+# Expose Node port
 EXPOSE 3000
 
-# Start the server
 CMD ["node", "src/server.js"]
+# CMD ["npm", "run", "dev"]

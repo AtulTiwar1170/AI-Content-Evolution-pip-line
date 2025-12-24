@@ -1,7 +1,6 @@
-# Use Node.js 18
-FROM node:18-alpine
+# Use Node 20 (LTS) to satisfy Vite's requirements
+FROM node:20-alpine
 
-# Set working directory
 WORKDIR /app
 
 # Copy package files
@@ -13,8 +12,8 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Expose Vite's default port
+# Expose Vite port
 EXPOSE 5173
 
-# Run Vite with --host to allow external access (outside the container)
+# Start Vite with --host to allow Docker access
 CMD ["npm", "run", "dev", "--", "--host"]
