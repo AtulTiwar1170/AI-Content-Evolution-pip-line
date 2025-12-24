@@ -1,0 +1,88 @@
+version: '3.8'
+.environment
+.env
+env
+services:
+  # 1. Database Service (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: ai_db
+    restart: always
+    environment:
+        POSTGRES_DB: ${DB_DATABASE}
+        POSTGRES_USER: ${DB_USERNAME}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+        - "${DB_PORT}:5432"
+    volumes:
+        - postgres_data:/var/lib/postgresql/data
+    networks:
+        - ai_network
+
+    # 2. Laravel API Service
+  laravel_api:
+    build: 
+      context: ./laravel_api
+      dockerfile: Dockerfile
+    container_name: ai_laravel
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: db
+      DB_CONNECTION: pgsql
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      APP_KEY: ${APP_KEY}
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+    networks:
+      - ai_network
+
+  # 3. Node.js Evolution Service
+  node_backend:
+    build:
+      context: ./node_backend
+      dockerfile: Dockerfile
+    container_name: ai_node
+    restart: always
+    depends_on:
+      - laravel_api
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      GOOGLE_CX: ${GOOGLE_CX}
+      LARAVEL_API_URL: http://laravel_api:8000/api
+    networks:
+      - ai_network
+
+  # 4. React Frontend Service (Vite)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ai_frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_LARAVEL_API_URL=${VITE_LARAVEL_API_URL}
+      - VITE_NODE_API_URL=${VITE_NODE_API_URL}
+    networks:
+      - ai_network
+
+# Persistent storage for the database so data isn't lost when containers stop
+volumes:
+  postgres_data:
+
+# Internal network for container-to-container communication
+networks:
+  ai_network:
+    driver: bridge

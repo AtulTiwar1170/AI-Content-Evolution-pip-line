@@ -1,0 +1,21 @@
+# Dependencies
+vendor
+
+# Laravel Specific
+storage/framework/sessions/*
+storage/framework/views/*
+storage/framework/cache/data/*
+storage/logs/*.log
+bootstrap/cache/*
+
+# Local secrets
+.env
+.env.backup
+.phpunit.result.cache
+
+# Version Control
+.git
+.gitignore
+
+# OS Files
+.DS_Store
