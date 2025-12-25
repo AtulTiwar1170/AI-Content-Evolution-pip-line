@@ -1,6 +1,6 @@
 FROM php:8.2-fpm-alpine
 
-# Install system dependencies for PostgreSQL and PHP extensions
+# Install system dependencies
 RUN apk add --no-cache \
     postgresql-dev \
     git \
@@ -10,7 +10,7 @@ RUN apk add --no-cache \
     icu-dev \
     oniguruma-dev
 
-# Install PHP extensions required for Laravel & PostgreSQL
+# Install PHP extensions
 RUN docker-php-ext-install \
     pdo \
     pdo_pgsql \
@@ -19,21 +19,19 @@ RUN docker-php-ext-install \
     mbstring \
     zip
 
-# Fix for Composer: Copy the binary from the official image instead of using curl
+# Setup Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Set working directory
 WORKDIR /var/www
-
-# Copy existing application directory contents
 COPY . .
 
-# Adjust permissions for Laravel storage and cache
+# Install dependencies and optimize
 RUN composer install --no-dev --optimize-autoloader --no-interaction
-RUN chown -R www-data:www-data /var/www/storage /var/www/cache 2>/dev/null || true
 
-# Expose port 8000
+# Set permissions
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
 EXPOSE 8000
 
-# Update the CMD to run migrations before starting the server
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000
+# The fix: Clear config cache first, wait 5 seconds, then migrate and serve
+CMD php artisan config:clear && sleep 5 && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000
