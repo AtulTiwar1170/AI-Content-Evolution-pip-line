@@ -92,7 +92,7 @@ Ensure that Docker and Docker Compose are installed on your local workstation.
 
 ## DEPLOYMENT AND SUBMISSION
 
-- **Live Frontend Application**: https://ai-frontend-app.onrender.com
+- **Live Frontend Application**: https://content-evolution.onrender.com/
 
 - **Docker Hub Repository**: https://hub.docker.com/u/atultiwaridocker
 
