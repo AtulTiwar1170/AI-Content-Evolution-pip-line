@@ -37,7 +37,7 @@ const App = () => {
     setStatus({ message: 'Scraping original blogs...', type: 'info' });
     try {
       // Updated to use Env Variable
-      await axios.post(`${NODE_API}/articles/ingest`);
+      await axios.post(`${NODE_API}/ingest`);
       await fetchArticles();
       setStatus({ message: 'Ingestion complete!', type: 'success' });
     } catch (err) {
@@ -52,7 +52,7 @@ const App = () => {
     setEvolvingId(id);
     try {
       // Updated to use Env Variable
-      const res = await axios.post(`${NODE_API}/articles/evolve`, { id });
+      const res = await axios.post(`${NODE_API}/evolve`, { id });
       
       if (res.data.alreadyEvolved) {
         alert("This article is already optimized!");
