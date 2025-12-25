@@ -23,7 +23,10 @@ RUN docker-php-ext-install \
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 WORKDIR /var/www
+
+# We copy the code, but we will delete any existing .env to force Render's vars
 COPY . .
+RUN rm -f .env
 
 # Install dependencies and optimize
 RUN composer install --no-dev --optimize-autoloader --no-interaction
@@ -33,5 +36,13 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 8000
 
-# The fix: Clear config cache first, wait 5 seconds, then migrate and serve
-CMD php artisan config:clear && sleep 5 && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000
+# The fix: 
+# 1. Clear all caches
+# 2. Print the DB_HOST to the logs (for debugging)
+# 3. Wait 10 seconds for the network
+# 4. Migrate and Serve
+CMD php artisan config:clear && \
+    echo "DEBUG: Connecting to DB_HOST: $DB_HOST" && \
+    sleep 10 && \
+    php artisan migrate --force && \
+    php artisan serve --host=0.0.0.0 --port=8000
