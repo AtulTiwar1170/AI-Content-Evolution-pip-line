@@ -93,7 +93,7 @@ Ensure that Docker and Docker Compose are installed on your local workstation.
 ## DEPLOYMENT AND SUBMISSION
 
 - **Live Frontend Application**: https://content-evolution.onrender.com/
-
+(when i am going to submit that cloud raise error related to URL so if that live link is not provide you perfect experice than docker images are available to run that with instruction)
 - **Docker Hub Repository**: https://hub.docker.com/u/atultiwaridocker
 
 ## CONFIDENTIALITY AND PUBLIC ACCESS
