@@ -37,6 +37,13 @@ app.use('/api/v1/articles', articleRoutes);
  * 3. Health Check
  * Standard in Google microservices to ensure the container is alive
  */
+app.get('/', (req, res) => {
+    res.status(200).send({
+        status: "Active",
+        message: "Gemini AI Service is running successfully",
+        version: "1.0.0"
+    });
+});
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'UP', timestamp: new Date().toISOString() });
 });
